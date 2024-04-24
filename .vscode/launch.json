@@ -15,7 +15,7 @@
             "autoStartBrowser": false,
             "cwd": "/Users/vishvaraj.dhanawade/projects/drf-social-networkig/social_network",
             "pythonPath": "/Users/vishvaraj.dhanawade/projects/drf-social-networkig/venv/bin/python",
-            "program": "${workspaceFolder}/social_network/manage.py"
+            "program": "${workspaceFolder}/social_network/manage.py",
         }
     ]
 }

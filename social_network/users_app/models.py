@@ -1,4 +1,4 @@
-import uuid
+import datetime
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -40,6 +40,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30, default=None, blank=True, null=True)
     last_name = models.CharField(max_length=30, default=None, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     objects = CustomUserManager()  # Use your custom user manager
     USERNAME_FIELD = 'email'

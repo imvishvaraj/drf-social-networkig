@@ -57,7 +57,7 @@ class UserSearchView(ListAPIView):
     pagination_class = PageNumberPagination
 
     def get_queryset(self):
-        queryset = UserAccount.objects.all()
+        queryset = UserAccount.objects.all().order_by('-created_at')
         email = self.request.query_params.get('email', None)
         name = self.request.query_params.get('name', None)
 

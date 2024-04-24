@@ -19,7 +19,7 @@ class FriendRequest(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     from_user = models.ForeignKey(UserAccount, related_name='friend_requests_sent', on_delete=models.CASCADE)
     to_user = models.ForeignKey(UserAccount, related_name='friend_requests_received', on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
     def accept(self):

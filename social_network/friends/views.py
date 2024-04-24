@@ -48,7 +48,7 @@ class PendingFriendRequestsView(ListAPIView):
     serializer_class = FriendRequestSerializer
 
     def get_queryset(self):
-        return FriendRequest.objects.filter(to_user=self.request.user, status='pending')
+        return FriendRequest.objects.filter(to_user=self.request.user, status='pending').order_by('-created_at')
 
 
 class UserFriendsListView(ListAPIView):
@@ -57,6 +57,6 @@ class UserFriendsListView(ListAPIView):
 
     def get_queryset(self):
         user_id = self.kwargs['user_id']
-        friendships = Friendship.objects.filter(Q(user1_id=user_id) | Q(user2_id=user_id))
+        friendships = Friendship.objects.filter(Q(user1_id=user_id) | Q(user2_id=user_id)).order_by('-created_at')
         friend_ids = [friendship.user2_id if friendship.user1_id == user_id else friendship.user1_id for friendship in friendships]
-        return UserAccount.objects.filter(id__in=friend_ids)
+        return UserAccount.objects.filter(id__in=friend_ids).order_by('-created_at')

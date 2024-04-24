@@ -6,7 +6,7 @@ from friends.models import FriendRequest
 
 class FriendRequestSerializer(serializers.ModelSerializer):
     from_user = UserDetailSerializer(read_only=True)
-    to_user = serializers.PrimaryKeyRelatedField(queryset=UserAccount.objects.all())
+    to_user = serializers.PrimaryKeyRelatedField(queryset=UserAccount.objects.all().order_by('-created_at'))
 
     class Meta:
         model = FriendRequest
