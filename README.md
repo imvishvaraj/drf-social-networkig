@@ -10,11 +10,11 @@ Django Rest Framework with social networking, searching, signup, login
 2. Create virtual environment for project  
 `virtualenv -p python3 venv`
 
-3. Activate virtual environment  
-`source venv/bin/activate`
+3. Activate virtual environment and change directory   
+`source venv/bin/activate && cd social_network`
 
 4. Install python dependencies  
-`pip install -r social_network/requirements.txt`
+`pip install -r requirements.txt`
 
 5. Apply Database Migrations  
 `python manage.py migrate`
