@@ -1,10 +1,12 @@
-from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth import authenticate
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
-from .models import FriendRequest
+from .models import FriendRequest, UserAccount, Friendship
 from .serializers import UserCreateSerializer, UserLoginSerializer, UserDetailSerializer, FriendRequestSerializer
 
 
@@ -49,7 +51,26 @@ class UserDetailView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserSearchView(ListAPIView):
+    serializer_class = UserDetailSerializer
+    pagination_class = PageNumberPagination
+
+    def get_queryset(self):
+        queryset = UserAccount.objects.all()
+        email = self.request.query_params.get('email', None)
+        name = self.request.query_params.get('name', None)
+
+        if email is not None:
+            queryset = queryset.filter(email=email)
+        elif name is not None:
+            queryset = queryset.filter(Q(first_name__icontains=name) | Q(last_name__icontains=name))
+
+        return queryset
+
+
 class SendFriendRequestView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         serializer = FriendRequestSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
@@ -81,3 +102,13 @@ class PendingFriendRequestsView(ListAPIView):
 
     def get_queryset(self):
         return FriendRequest.objects.filter(to_user=self.request.user, status='pending')
+
+
+class UserFriendsListView(ListAPIView):
+    serializer_class = UserDetailSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        friendships = Friendship.objects.filter(Q(user1_id=user_id) | Q(user2_id=user_id))
+        friend_ids = [friendship.user2_id if friendship.user1_id == user_id else friendship.user1_id for friendship in friendships]
+        return UserAccount.objects.filter(id__in=friend_ids)
