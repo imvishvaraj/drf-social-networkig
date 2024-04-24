@@ -2,7 +2,8 @@
 Django Rest Framework with social networking, searching, signup, login
 
 
-## Setup & Run DRF Server
+## Setup & Run DRF Server 
+### With Terminal
 1. Clone this repo or copy page below command  
 `git clone https://github.com/imvishvaraj/drf-social-networkig.git`
 
@@ -23,6 +24,13 @@ Django Rest Framework with social networking, searching, signup, login
 
 7. Now you can access API endpoints via Postman or Curl calls.
 
+### With Docker Compose
+To run with docker, you need docker install on system. Please use official documentation site.
+
+1. Build  
+`docker compose build`
+2. Run  
+`docker compose up`
 
 ## API Endpoints:
 All API endpoints need Authorization Header. Except register, login.
