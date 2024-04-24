@@ -2,8 +2,6 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import FriendRequest, UserAccount
-
 
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,23 +33,3 @@ class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ['id', 'email', 'first_name', 'last_name']
-
-
-class FriendRequestSerializer(serializers.ModelSerializer):
-    from_user = UserDetailSerializer(read_only=True)
-    to_user = serializers.PrimaryKeyRelatedField(queryset=UserAccount.objects.all())
-
-    class Meta:
-        model = FriendRequest
-        fields = ['id', 'from_user', 'to_user', 'timestamp', 'status']
-
-    def create(self, validated_data):
-        validated_data['from_user'] = self.context['request'].user
-        return super().create(validated_data)
-
-
-class PendingFriendRequestSerializer(FriendRequestSerializer):
-    from_user = UserDetailSerializer()
-
-    class Meta(FriendRequestSerializer.Meta):
-        fields = FriendRequestSerializer.Meta.fields + ['from_user']

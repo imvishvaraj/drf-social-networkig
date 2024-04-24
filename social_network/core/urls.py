@@ -16,8 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from .views import StatusView, RootView
+
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path('users/', include('users_app.urls'))
+    path('', RootView.as_view(), name='root'),
+    path('status/', StatusView.as_view(), name='status'),
+    path('admin/', admin.site.urls),
+    path('users/', include('users_app.urls')),
+    path('friends/', include('friends.urls'))
 ]

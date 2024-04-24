@@ -6,8 +6,8 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
-from .models import FriendRequest, UserAccount, Friendship
-from .serializers import UserCreateSerializer, UserLoginSerializer, UserDetailSerializer, FriendRequestSerializer
+from .models import UserAccount
+from .serializers import UserCreateSerializer, UserLoginSerializer, UserDetailSerializer
 
 
 class UserRegisterView(APIView):
@@ -52,6 +52,7 @@ class UserDetailView(APIView):
 
 
 class UserSearchView(ListAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = UserDetailSerializer
     pagination_class = PageNumberPagination
 
@@ -66,49 +67,3 @@ class UserSearchView(ListAPIView):
             queryset = queryset.filter(Q(first_name__icontains=name) | Q(last_name__icontains=name))
 
         return queryset
-
-
-class SendFriendRequestView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        serializer = FriendRequestSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            serializer.save(from_user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class AcceptFriendRequestView(APIView):
-    def post(self, request, request_id):
-        friend_request = FriendRequest.objects.get(id=request_id)
-        if friend_request.to_user != request.user:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        friend_request.accept()
-        return Response(status=status.HTTP_200_OK)
-
-
-class RejectFriendRequestView(APIView):
-    def post(self, request, request_id):
-        friend_request = FriendRequest.objects.get(id=request_id)
-        if friend_request.to_user != request.user:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        friend_request.reject()
-        return Response(status=status.HTTP_200_OK)
-
-
-class PendingFriendRequestsView(ListAPIView):
-    serializer_class = FriendRequestSerializer
-
-    def get_queryset(self):
-        return FriendRequest.objects.filter(to_user=self.request.user, status='pending')
-
-
-class UserFriendsListView(ListAPIView):
-    serializer_class = UserDetailSerializer
-
-    def get_queryset(self):
-        user_id = self.kwargs['user_id']
-        friendships = Friendship.objects.filter(Q(user1_id=user_id) | Q(user2_id=user_id))
-        friend_ids = [friendship.user2_id if friendship.user1_id == user_id else friendship.user1_id for friendship in friendships]
-        return UserAccount.objects.filter(id__in=friend_ids)
