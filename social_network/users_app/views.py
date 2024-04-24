@@ -11,6 +11,8 @@ from .serializers import UserCreateSerializer, UserLoginSerializer, UserDetailSe
 
 
 class UserRegisterView(APIView):
+    throttle_scope = 'all'
+    
     def post(self, request):
         serializer = UserCreateSerializer(data=request.data)
         if serializer.is_valid():
@@ -26,6 +28,8 @@ class UserRegisterView(APIView):
 
 
 class UserLoginView(APIView):
+    throttle_scope = 'all'
+
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
@@ -38,6 +42,7 @@ class UserLoginView(APIView):
 
 class UserDetailView(APIView):
     permission_classes = [IsAuthenticated]
+    throttle_scope = 'all'
 
     def get(self, request):
         serializer = UserDetailSerializer(request.user)
@@ -55,6 +60,7 @@ class UserSearchView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserDetailSerializer
     pagination_class = PageNumberPagination
+    throttle_scope = 'all'
 
     def get_queryset(self):
         queryset = UserAccount.objects.all().order_by('-created_at')

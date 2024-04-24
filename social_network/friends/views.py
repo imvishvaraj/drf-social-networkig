@@ -12,6 +12,7 @@ from users_app.models import UserAccount
 
 class SendFriendRequestView(APIView):
     permission_classes = [IsAuthenticated]
+    throttle_scope = 'all'
 
     def post(self, request):
         serializer = FriendRequestSerializer(data=request.data, context={'request': request})
@@ -23,6 +24,7 @@ class SendFriendRequestView(APIView):
 
 class AcceptFriendRequestView(APIView):
     permission_classes = [IsAuthenticated]
+    throttle_scope = 'all'
 
     def post(self, request, request_id):
         friend_request = FriendRequest.objects.get(id=request_id)
@@ -34,6 +36,7 @@ class AcceptFriendRequestView(APIView):
 
 class RejectFriendRequestView(APIView):
     permission_classes = [IsAuthenticated]
+    throttle_scope = 'all'
 
     def post(self, request, request_id):
         friend_request = FriendRequest.objects.get(id=request_id)
@@ -46,6 +49,7 @@ class RejectFriendRequestView(APIView):
 class PendingFriendRequestsView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = FriendRequestSerializer
+    throttle_scope = 'all'
 
     def get_queryset(self):
         return FriendRequest.objects.filter(to_user=self.request.user, status='pending').order_by('-created_at')
@@ -54,6 +58,7 @@ class PendingFriendRequestsView(ListAPIView):
 class UserFriendsListView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserDetailSerializer
+    throttle_scope = 'all'
 
     def get_queryset(self):
         user_id = self.kwargs['user_id']
